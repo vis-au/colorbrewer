@@ -1,10 +1,24 @@
+//
+//
+// LICENSE NOTICE:
+// THIS FILE HAS BEEN MODIFIED AND THUS DIFFERS FROM THE ORIGINAL COLOR BREWER PROJECT
+//
+//
+
+import { SpecParser, SpecCompiler } from "remodel-vis";
+import vegaEmbed from "vega-embed";
+
+const colorEncodings =  ["color", "fill", "stroke"];
+
 var schemeNames = {sequential: ["BuGn","BuPu","GnBu","OrRd","PuBu","PuBuGn","PuRd","RdPu","YlGn","YlGnBu","YlOrBr","YlOrRd"],
 					singlehue:["Blues","Greens","Greys","Oranges","Purples","Reds"],
 					diverging: ["BrBG","PiYG","PRGn","PuOr","RdBu","RdGy","RdYlBu","RdYlGn","Spectral"],
 					qualitative: ["Accent","Dark2","Paired","Pastel1","Pastel2","Set1","Set2","Set3"] };
 
-var visibleMap,
-	selectedScheme = "BuGn",
+var selectedScheme = "BuGn",
+	selectedEncodingIndex = 1,
+	selectedFieldIndex = 0,
+	importedTemplate = null,
 	numClasses = 3;
 
 $("#num-classes").change(function(){
@@ -16,6 +30,32 @@ $(".scheme-type").change(function(){
 $("#color-system").change(updateValues);
 $("#layers input").change(layerChange);
 $("#filters input").change(showSchemes);
+
+$("input#import").keypress(function(event) {
+
+  if (event.which !== 13) {
+    return;
+  }
+
+  const jsonString = $(this).val();
+  const jsonObject = JSON.parse(jsonString);
+	const parser = new SpecParser();
+
+	importedTemplate = parser.parse(jsonObject);
+
+	$("#importPanel").val("");
+	$("#importPanel").hide();
+	$("#showImport").show();
+
+	initVega();
+  updateVegaSpec();
+});
+
+$("#showImport").click(function() {
+	$("#importPanel").show();
+	$("#showImport").hide();
+});
+$("#showImport").hide();
 
 $("#transparency-slider").mousedown(function(){
 	var max = $("#transparency-track").width();
@@ -179,6 +219,18 @@ function clearSchemes()
 	$("#ramps").append("<p>No color schemes match these criteria.</p><p>Please choose fewer data classes, a different data type, and/or fewer filtering options.</p>");
 }
 
+function updateVegaSpec()
+{
+  if (importedTemplate === null) {
+    return;
+	}
+
+	const compiler = new SpecCompiler();
+	const spec = compiler.getVegaSpecification(importedTemplate);
+
+	vegaEmbed("#vega-container", spec);
+}
+
 function setScheme(s)
 {
 	$("#county-map g").removeClass(selectedScheme).addClass(s);
@@ -199,6 +251,35 @@ function setScheme(s)
 		if ( i < numClasses - 1 ) cssString += " ";
 	}
 	$("#copy-css input").val(cssString);
+
+	if (importedTemplate !== null) {
+		const compiler = new SpecCompiler();
+		importedTemplate.width = 700;
+		importedTemplate.height = 500;
+		const spec = compiler.getVegaSpecification(importedTemplate);
+		$("#copy-vega input").val(JSON.stringify(spec, null, 2));
+	}
+
+  if (importedTemplate !== null) {
+		const field = importedTemplate.dataTransformationNode.values !== undefined
+			? Object.keys(importedTemplate.dataTransformationNode.values[0])[selectedFieldIndex]
+			: Object.keys(importedTemplate.dataTransformationNode.getRootDatasetNode().values[0])[selectedFieldIndex];
+		const type = selectedSchemeType === "sequential" ? "quantitative" : selectedSchemeType === "diverging" ? "nominal" : "ordinal";
+		const schemeColors = colorbrewer[selectedScheme][numClasses];
+		const range = type !== "quantitative" ? schemeColors : [schemeColors[schemeColors.length - 2], schemeColors[0]];
+		const encoding = {
+			field,
+			type,
+			scale: {
+				range
+			}
+		};
+		const visualVariable = colorEncodings[selectedEncodingIndex];
+
+		importedTemplate.encodings.set(visualVariable, encoding);
+  }
+
+	updateVegaSpec();
 
 	$(".score-icon").attr("class","score-icon");
 	var f = checkColorblind(s);
@@ -323,38 +404,65 @@ function getColorDisplay(c,s)
 function getCMYK( scheme, classes, n ){
 	return cmyk[scheme][classes][n].toString();
 }
-var highlight;
-$("#counties").svg({
-	loadURL: "map/map.svg",
-	onLoad: function(){
-		$("#counties svg")
-			.attr("id","county-map")
-			.attr("width",756)
-			.attr("height",581);
-		$("#map-container").css("background-image","none");
-		init();
-		$("#counties path").mouseover(function(){
-			var c = $(this).css("fill");
-			var cl = $(this).attr("class").match(new RegExp("q[0-9]+-"+numClasses))[0];
-			cl = parseInt(cl.substring(cl.indexOf("q")+1,cl.indexOf("-"))) + 1;
-			$("#probe").empty().append(
-				"<p>"+selectedScheme+" class " + cl +"<br/>"+
-				"RGB: " + getColorDisplay(c,"rgb")+"<br/>"+
-				"CMYK: " + getCMYK(selectedScheme,numClasses,cl-1)+"<br/>"+
-				"HEX: " + getColorDisplay(c,"hex")+"</p>"
-			);
-			highlight = $(this).clone().css({"pointer-events":"none","stroke":"#000","stroke-width":"2"}).appendTo("#county-map g");
-			$("#probe").show();
-		});
-		$("#counties path").mousemove(function(e){
-			$("#probe").css({left: Math.min(920,e.pageX - $("#wrapper").offset().left + 10), top: e.pageY - $("#wrapper").offset().top - 75 });
-		});
-		$("#counties path").mouseout(function(){$("#probe").hide();highlight.remove();});
+
+function selectEncoding(encodingIndex) {
+	selectedEncodingIndex = encodingIndex;
+	initVega();
+}
+
+function renderActiveEncodings() {
+	if (importedTemplate === null) {
+		return;
 	}
-});
+
+	const encodingsContainer = $("#encodings");
+	encodingsContainer.empty();
+
+	colorEncodings.forEach((encodingName, i) => {
+		const isSelected = i === selectedEncodingIndex ? "selectedEncoding" : "";
+		const isActive = importedTemplate.encodings.has(encodingName) ? "activeEncoding" : "";
+		const newEncoding = $(`<li class="encoding ${isActive} ${isSelected}">${encodingName}</li>`);
+		newEncoding.click(() => selectEncoding(i));
+		encodingsContainer.append(newEncoding);
+	});
+}
+
+function selectField(fieldIndex) {
+	selectedFieldIndex = fieldIndex;
+	initVega();
+}
+
+function renderFields() {
+	if (importedTemplate === null) {
+		return;
+	}
+
+	// check if transform or data node
+	const fields = importedTemplate.dataTransformationNode.values !== undefined
+		? Object.keys(importedTemplate.dataTransformationNode.values[0])
+		: Object.keys(importedTemplate.dataTransformationNode.getRootDatasetNode().values[0]);
+
+	const fieldsContainer = $("#fields");
+	fieldsContainer.empty();
+
+	fields.forEach((field, i) => {
+		const isSelected = i === selectedFieldIndex ? "selectedField" : "";
+		const newField = $(`<li class="field ${isSelected}">${field}</li>`);
+		newField.click(() => selectField(i));
+		fieldsContainer.append(newField);
+	});
+}
+
+function initVega() {
+	renderActiveEncodings();
+	renderFields();
+
+	updateVegaSpec();
+}
 
 function init()
 {
+	$("#map-container").css("background-image","none");
 	var type = getParameterByName("type") || "sequential";
 	var scheme = getParameterByName("scheme") || "BuGn";
 	var n = getParameterByName("n") || 3;
@@ -363,7 +471,10 @@ function init()
 	setSchemeType(type);
 	setNumClasses(n);
 	setScheme(scheme);
+	initVega();
 }
+
+init();
 
 function layerChange()
 {
