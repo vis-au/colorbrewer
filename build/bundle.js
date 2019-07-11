@@ -116,8 +116,9 @@ var schemeNames = {sequential: ["BuGn","BuPu","GnBu","OrRd","PuBu","PuBuGn","PuR
 					qualitative: ["Accent","Dark2","Paired","Pastel1","Pastel2","Set1","Set2","Set3"] };
 
 var selectedScheme = "BuGn",
-	selectedEncodingIndex = 1,
-	selectedFieldIndex = 0,
+	selectedEncoding = "color",
+	selectedField = null,
+	selectedView = null,
 	importedTemplate = null,
 	numClasses = 3;
 
@@ -137,6 +138,7 @@ $("#importVegaButton").click(function() {
 	const parser = new remodel_vis__WEBPACK_IMPORTED_MODULE_0__["SpecParser"]();
 
 	importedTemplate = parser.parse(jsonObject);
+	selectedView = importedTemplate.getFlatHierarchy().filter(t => t instanceof remodel_vis__WEBPACK_IMPORTED_MODULE_0__["PlotTemplate"])[0];
 
 	initVega();
   updateVegaSpec();
@@ -306,8 +308,8 @@ function clearSchemes()
 
 function updateVegaSpec()
 {
-  if (importedTemplate === null) {
-    return;
+	if (importedTemplate === null) {
+		return;
 	}
 
 	const compiler = new remodel_vis__WEBPACK_IMPORTED_MODULE_0__["SpecCompiler"]();
@@ -345,10 +347,8 @@ function setScheme(s)
 		$("#vegaImport").val(JSON.stringify(spec, null, 2));
 	}
 
-  if (importedTemplate !== null) {
-		const field = importedTemplate.dataTransformationNode.values !== undefined
-			? Object.keys(importedTemplate.dataTransformationNode.values[0])[selectedFieldIndex]
-			: Object.keys(importedTemplate.dataTransformationNode.getRootDatasetNode().values[0])[selectedFieldIndex];
+  if (selectedView !== null) {
+		const field = selectedField;
 		const type = selectedSchemeType === "sequential" ? "quantitative" : selectedSchemeType === "diverging" ? "nominal" : "ordinal";
 		const schemeColors = colorbrewer[selectedScheme][numClasses];
 		const range = type !== "quantitative" ? schemeColors : [schemeColors[schemeColors.length - 2], schemeColors[0]];
@@ -359,9 +359,9 @@ function setScheme(s)
 				range
 			}
 		};
-		const visualVariable = colorEncodings[selectedEncodingIndex];
+		const visualVariable = selectedEncoding;
 
-		importedTemplate.encodings.set(visualVariable, encoding);
+		selectedView.encodings.set(visualVariable, encoding);
   }
 
 	updateVegaSpec();
@@ -490,56 +490,93 @@ function getCMYK( scheme, classes, n ){
 	return cmyk[scheme][classes][n].toString();
 }
 
-function selectEncoding(encodingIndex) {
-	selectedEncodingIndex = encodingIndex;
+function selectEncoding(encoding) {
+	selectedEncoding = encoding;
 	initVega();
 }
 
 function renderActiveEncodings() {
-	if (importedTemplate === null) {
+	if (selectedView === null) {
 		return;
 	}
 
 	const encodingsContainer = $("#encodings");
 	encodingsContainer.empty();
 
-	colorEncodings.forEach((encodingName, i) => {
-		const isSelected = i === selectedEncodingIndex ? "selectedEncoding" : "";
-		const isActive = importedTemplate.encodings.has(encodingName) ? "activeEncoding" : "";
+	colorEncodings.forEach(encodingName => {
+		const isSelected = encodingName === selectedEncoding ? "selectedEncoding" : "";
+		const isActive = selectedView.encodings.has(encodingName) ? "activeEncoding" : "";
 		const newEncoding = $(`<li class="encoding ${isActive} ${isSelected}">${encodingName}</li>`);
-		newEncoding.click(() => selectEncoding(i));
+		newEncoding.click(() => selectEncoding(encodingName));
 		encodingsContainer.append(newEncoding);
 	});
 }
 
-function selectField(fieldIndex) {
-	selectedFieldIndex = fieldIndex;
+function selectView(view) {
+	selectedView = view;
 	initVega();
 }
 
-function renderFields() {
+function renderViews() {
 	if (importedTemplate === null) {
 		return;
 	}
 
+	const plotViews = importedTemplate.getFlatHierarchy()
+		.filter(t => t instanceof remodel_vis__WEBPACK_IMPORTED_MODULE_0__["PlotTemplate"]);
+
+	const viewsContainer = $("#views");
+	viewsContainer.empty();
+
+	plotViews.forEach(view => {
+		const mark = typeof view.mark === "string" ? view.mark : view.mark.type;
+		const isActive = view === selectedView ? "selectedView" : "";
+		const newView = $(`<li class="view ${isActive}">${mark}</li>`);
+		newView.click(() => selectView(view));
+		viewsContainer.append(newView);
+	});
+}
+
+function selectField(field) {
+	selectedField = field;
+	initVega();
+}
+
+function renderFields() {
+	if (selectedView === null) {
+		return;
+	}
+
+	let dataNode = null;
+
+	if (selectedView.dataTransformationNode === null) {
+		dataNode = importedTemplate.dataTransformationNode;
+		if (dataNode instanceof remodel_vis__WEBPACK_IMPORTED_MODULE_0__["TransformNode"]) {
+			dataNode = dataNode.getRootDatasetNode();
+		}
+	} else if (selectedView.dataTransformationNode instanceof remodel_vis__WEBPACK_IMPORTED_MODULE_0__["TransformNode"]) {
+		dataNode = selectedView.dataTransformationNode.getRootDatasetNode();
+	} else {
+		dataNode = selectedView.dataTransformationNode;
+	}
+
 	// check if transform or data node
-	const fields = importedTemplate.dataTransformationNode.values !== undefined
-		? Object.keys(importedTemplate.dataTransformationNode.values[0])
-		: Object.keys(importedTemplate.dataTransformationNode.getRootDatasetNode().values[0]);
+	const fields = Object.keys(dataNode.values[0]);
 
 	const fieldsContainer = $("#fields");
 	fieldsContainer.empty();
 
-	fields.forEach((field, i) => {
-		const isSelected = i === selectedFieldIndex ? "selectedField" : "";
+	fields.forEach(field => {
+		const isSelected = field === selectedField ? "selectedField" : "";
 		const newField = $(`<li class="field ${isSelected}">${field}</li>`);
-		newField.click(() => selectField(i));
+		newField.click(() => selectField(field));
 		fieldsContainer.append(newField);
 	});
 }
 
 function initVega() {
 	renderActiveEncodings();
+	renderViews();
 	renderFields();
 
 	updateVegaSpec();
@@ -665,7 +702,7 @@ $( "#export #tab" ).toggle(
 		$( "#export" ).animate( { "left" : "265px" } );
 	},
 	function(){
-		$( "#export" ).animate( { "left" : "-1px" } );
+		$( "#export" ).animate( { "left" : "-2px" } );
 	})
 
 function rgb2cmyk (r,g,b) {
