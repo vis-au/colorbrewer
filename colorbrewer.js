@@ -5,8 +5,9 @@
 //
 //
 
-import { SpecParser, SpecCompiler, PlotTemplate, TransformNode } from "remodel-vis";
+import { SpecParser, SpecCompiler, PlotTemplate, TransformNode, URLDatasetNode } from "remodel-vis";
 import vegaEmbed from "vega-embed";
+import * as d3 from "d3-fetch";
 
 const colorEncodings =  ["color", "fill", "stroke"];
 
@@ -442,7 +443,19 @@ function selectField(field) {
 	initVega();
 }
 
-function renderFields() {
+function renderFields(fields) {
+  const fieldsContainer = $("#fields");
+	fieldsContainer.empty();
+
+	fields.forEach(field => {
+		const isSelected = field === selectedField ? "selectedField" : "";
+		const newField = $(`<li class="field ${isSelected}">${field}</li>`);
+		newField.click(() => selectField(field));
+		fieldsContainer.append(newField);
+	});
+}
+
+function getFields() {
 	if (selectedView === null) {
 		return;
 	}
@@ -458,26 +471,32 @@ function renderFields() {
 		dataNode = selectedView.dataTransformationNode.getRootDatasetNode();
 	} else {
 		dataNode = selectedView.dataTransformationNode;
-	}
+  }
 
-	// check if transform or data node
-	const fields = Object.keys(dataNode.values[0]);
+  if (dataNode instanceof URLDatasetNode) {
+    let promise = null;
+    if (dataNode.url.indexOf(".csv") > -1) {
+      promise = d3.csv(dataNode.url);
+    } else if (dataNode.url.indexOf(".json") > -1) {
+      promise = d3.json(dataNode.url);
+    }
 
-	const fieldsContainer = $("#fields");
-	fieldsContainer.empty();
-
-	fields.forEach(field => {
-		const isSelected = field === selectedField ? "selectedField" : "";
-		const newField = $(`<li class="field ${isSelected}">${field}</li>`);
-		newField.click(() => selectField(field));
-		fieldsContainer.append(newField);
-	});
+    promise
+      .then(data => {
+        const fields = Object.keys(data[0]);
+        renderFields(fields);
+      });
+  } else {
+    // check if transform or data node
+    const fields = Object.keys(dataNode.values[0]);
+    renderFields(fields);
+  }
 }
 
 function initVega() {
 	renderActiveEncodings();
 	renderViews();
-	renderFields();
+	getFields();
 
 	updateVegaSpec();
 }

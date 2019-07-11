@@ -98,12 +98,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var remodel_vis__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! remodel-vis */ "./node_modules/remodel-vis/dist/index.js");
 /* harmony import */ var remodel_vis__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(remodel_vis__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vega_embed__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vega-embed */ "./node_modules/vega-embed/build/src/embed.js");
+/* harmony import */ var d3_fetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3-fetch */ "./node_modules/d3-fetch/src/index.js");
 //
 //
 // LICENSE NOTICE:
 // THIS FILE HAS BEEN MODIFIED AND THUS DIFFERS FROM THE ORIGINAL COLOR BREWER PROJECT
 //
 //
+
 
 
 
@@ -542,7 +544,19 @@ function selectField(field) {
 	initVega();
 }
 
-function renderFields() {
+function renderFields(fields) {
+  const fieldsContainer = $("#fields");
+	fieldsContainer.empty();
+
+	fields.forEach(field => {
+		const isSelected = field === selectedField ? "selectedField" : "";
+		const newField = $(`<li class="field ${isSelected}">${field}</li>`);
+		newField.click(() => selectField(field));
+		fieldsContainer.append(newField);
+	});
+}
+
+function getFields() {
 	if (selectedView === null) {
 		return;
 	}
@@ -558,26 +572,32 @@ function renderFields() {
 		dataNode = selectedView.dataTransformationNode.getRootDatasetNode();
 	} else {
 		dataNode = selectedView.dataTransformationNode;
-	}
+  }
 
-	// check if transform or data node
-	const fields = Object.keys(dataNode.values[0]);
+  if (dataNode instanceof remodel_vis__WEBPACK_IMPORTED_MODULE_0__["URLDatasetNode"]) {
+    let promise = null;
+    if (dataNode.url.indexOf(".csv") > -1) {
+      promise = d3_fetch__WEBPACK_IMPORTED_MODULE_2__["csv"](dataNode.url);
+    } else if (dataNode.url.indexOf(".json") > -1) {
+      promise = d3_fetch__WEBPACK_IMPORTED_MODULE_2__["json"](dataNode.url);
+    }
 
-	const fieldsContainer = $("#fields");
-	fieldsContainer.empty();
-
-	fields.forEach(field => {
-		const isSelected = field === selectedField ? "selectedField" : "";
-		const newField = $(`<li class="field ${isSelected}">${field}</li>`);
-		newField.click(() => selectField(field));
-		fieldsContainer.append(newField);
-	});
+    promise
+      .then(data => {
+        const fields = Object.keys(data[0]);
+        renderFields(fields);
+      });
+  } else {
+    // check if transform or data node
+    const fields = Object.keys(dataNode.values[0]);
+    renderFields(fields);
+  }
 }
 
 function initVega() {
 	renderActiveEncodings();
 	renderViews();
-	renderFields();
+	getFields();
 
 	updateVegaSpec();
 }
@@ -7184,6 +7204,232 @@ var tsvParseRows = tsv.parseRows;
 var tsvFormat = tsv.format;
 var tsvFormatBody = tsv.formatBody;
 var tsvFormatRows = tsv.formatRows;
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-fetch/src/blob.js":
+/*!*******************************************!*\
+  !*** ./node_modules/d3-fetch/src/blob.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function responseBlob(response) {
+  if (!response.ok) throw new Error(response.status + " " + response.statusText);
+  return response.blob();
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function(input, init) {
+  return fetch(input, init).then(responseBlob);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-fetch/src/buffer.js":
+/*!*********************************************!*\
+  !*** ./node_modules/d3-fetch/src/buffer.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function responseArrayBuffer(response) {
+  if (!response.ok) throw new Error(response.status + " " + response.statusText);
+  return response.arrayBuffer();
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function(input, init) {
+  return fetch(input, init).then(responseArrayBuffer);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-fetch/src/dsv.js":
+/*!******************************************!*\
+  !*** ./node_modules/d3-fetch/src/dsv.js ***!
+  \******************************************/
+/*! exports provided: default, csv, tsv */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return dsv; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "csv", function() { return csv; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tsv", function() { return tsv; });
+/* harmony import */ var d3_dsv__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3-dsv */ "./node_modules/d3-dsv/src/index.js");
+/* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./text */ "./node_modules/d3-fetch/src/text.js");
+
+
+
+function dsvParse(parse) {
+  return function(input, init, row) {
+    if (arguments.length === 2 && typeof init === "function") row = init, init = undefined;
+    return Object(_text__WEBPACK_IMPORTED_MODULE_1__["default"])(input, init).then(function(response) {
+      return parse(response, row);
+    });
+  };
+}
+
+function dsv(delimiter, input, init, row) {
+  if (arguments.length === 3 && typeof init === "function") row = init, init = undefined;
+  var format = Object(d3_dsv__WEBPACK_IMPORTED_MODULE_0__["dsvFormat"])(delimiter);
+  return Object(_text__WEBPACK_IMPORTED_MODULE_1__["default"])(input, init).then(function(response) {
+    return format.parse(response, row);
+  });
+}
+
+var csv = dsvParse(d3_dsv__WEBPACK_IMPORTED_MODULE_0__["csvParse"]);
+var tsv = dsvParse(d3_dsv__WEBPACK_IMPORTED_MODULE_0__["tsvParse"]);
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-fetch/src/image.js":
+/*!********************************************!*\
+  !*** ./node_modules/d3-fetch/src/image.js ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(input, init) {
+  return new Promise(function(resolve, reject) {
+    var image = new Image;
+    for (var key in init) image[key] = init[key];
+    image.onerror = reject;
+    image.onload = function() { resolve(image); };
+    image.src = input;
+  });
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-fetch/src/index.js":
+/*!********************************************!*\
+  !*** ./node_modules/d3-fetch/src/index.js ***!
+  \********************************************/
+/*! exports provided: blob, buffer, dsv, csv, tsv, image, json, text, xml, html, svg */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _blob__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./blob */ "./node_modules/d3-fetch/src/blob.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "blob", function() { return _blob__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _buffer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./buffer */ "./node_modules/d3-fetch/src/buffer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "buffer", function() { return _buffer__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _dsv__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dsv */ "./node_modules/d3-fetch/src/dsv.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "dsv", function() { return _dsv__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "csv", function() { return _dsv__WEBPACK_IMPORTED_MODULE_2__["csv"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tsv", function() { return _dsv__WEBPACK_IMPORTED_MODULE_2__["tsv"]; });
+
+/* harmony import */ var _image__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./image */ "./node_modules/d3-fetch/src/image.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "image", function() { return _image__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./json */ "./node_modules/d3-fetch/src/json.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "json", function() { return _json__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./text */ "./node_modules/d3-fetch/src/text.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "text", function() { return _text__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _xml__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./xml */ "./node_modules/d3-fetch/src/xml.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "xml", function() { return _xml__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "html", function() { return _xml__WEBPACK_IMPORTED_MODULE_6__["html"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "svg", function() { return _xml__WEBPACK_IMPORTED_MODULE_6__["svg"]; });
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-fetch/src/json.js":
+/*!*******************************************!*\
+  !*** ./node_modules/d3-fetch/src/json.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function responseJson(response) {
+  if (!response.ok) throw new Error(response.status + " " + response.statusText);
+  return response.json();
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function(input, init) {
+  return fetch(input, init).then(responseJson);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-fetch/src/text.js":
+/*!*******************************************!*\
+  !*** ./node_modules/d3-fetch/src/text.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function responseText(response) {
+  if (!response.ok) throw new Error(response.status + " " + response.statusText);
+  return response.text();
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function(input, init) {
+  return fetch(input, init).then(responseText);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/d3-fetch/src/xml.js":
+/*!******************************************!*\
+  !*** ./node_modules/d3-fetch/src/xml.js ***!
+  \******************************************/
+/*! exports provided: default, html, svg */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "html", function() { return html; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "svg", function() { return svg; });
+/* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./text */ "./node_modules/d3-fetch/src/text.js");
+
+
+function parser(type) {
+  return function(input, init)  {
+    return Object(_text__WEBPACK_IMPORTED_MODULE_0__["default"])(input, init).then(function(text) {
+      return (new DOMParser).parseFromString(text, type);
+    });
+  };
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (parser("application/xml"));
+
+var html = parser("text/html");
+
+var svg = parser("image/svg+xml");
 
 
 /***/ }),
@@ -87940,7 +88186,7 @@ Object(vega_util__WEBPACK_IMPORTED_MODULE_0__["extend"])(vega_dataflow__WEBPACK_
 /*! exports provided: _args, _from, _id, _inBundle, _integrity, _location, _phantomChildren, _requested, _requiredBy, _resolved, _spec, _where, author, bugs, dependencies, description, devDependencies, gitHead, homepage, jsdelivr, keywords, license, main, module, name, repository, scripts, types, unpkg, version, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"_args\":[[\"vega@5.3.2\",\"C:\\\\Users\\\\au629923\\\\Repositories\\\\colorbrewer-fork\"]],\"_from\":\"vega@5.3.2\",\"_id\":\"vega@5.3.2\",\"_inBundle\":false,\"_integrity\":\"sha512-dmY7hHQDlBSqiQKmcAvUe56bD+MuwGLGkFw2tLLNjBe5c2Hl8oZt/DFzyyIizvS+IC2wqlBnIYSwhrVK3bRXwQ==\",\"_location\":\"/vega\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"vega@5.3.2\",\"name\":\"vega\",\"escapedName\":\"vega\",\"rawSpec\":\"5.3.2\",\"saveSpec\":null,\"fetchSpec\":\"5.3.2\"},\"_requiredBy\":[\"/remodel-vis\"],\"_resolved\":\"https://registry.npmjs.org/vega/-/vega-5.3.2.tgz\",\"_spec\":\"5.3.2\",\"_where\":\"C:\\\\Users\\\\au629923\\\\Repositories\\\\colorbrewer-fork\",\"author\":{\"name\":\"UW Interactive Data Lab\",\"url\":\"http://idl.cs.washington.edu\"},\"bugs\":{\"url\":\"https://github.com/vega/vega/issues\"},\"dependencies\":{\"vega-crossfilter\":\"^4.0.1\",\"vega-dataflow\":\"^5.2.1\",\"vega-encode\":\"^4.2.1\",\"vega-event-selector\":\"^2.0.0\",\"vega-expression\":\"^2.6.0\",\"vega-force\":\"^4.0.1\",\"vega-functions\":\"^5.2.0\",\"vega-geo\":\"^4.0.1\",\"vega-hierarchy\":\"^4.0.1\",\"vega-loader\":\"^4.0.0\",\"vega-parser\":\"^5.6.2\",\"vega-projection\":\"^1.2.1\",\"vega-runtime\":\"^5.0.1\",\"vega-scale\":\"^4.1.1\",\"vega-scenegraph\":\"^4.1.0\",\"vega-statistics\":\"^1.3.1\",\"vega-transforms\":\"^4.0.2\",\"vega-typings\":\"^0.6.2\",\"vega-util\":\"^1.10.0\",\"vega-view\":\"^5.2.1\",\"vega-view-transforms\":\"^4.3.0\",\"vega-voronoi\":\"^4.0.1\",\"vega-wordcloud\":\"^4.0.2\"},\"description\":\"The Vega visualization grammar.\",\"devDependencies\":{\"vega-schema\":\"*\"},\"gitHead\":\"bcea8011b193cfed59e5fa45cc2c00fd8cb9f588\",\"homepage\":\"https://github.com/vega/vega#readme\",\"jsdelivr\":\"build/vega.min.js\",\"keywords\":[\"vega\",\"visualization\",\"interaction\",\"dataflow\",\"library\",\"data\",\"d3\"],\"license\":\"BSD-3-Clause\",\"main\":\"build/vega-node.js\",\"module\":\"index\",\"name\":\"vega\",\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/vega/vega.git\"},\"scripts\":{\"build\":\"yarn rollup && node rollup -e && node rollup -m\",\"postbuild\":\"terser build/vega.js -c -m -o build/vega.min.js && terser build/vega-core.js -c -m -o build/vega-core.min.js\",\"postpublish\":\"git push && git push --tags && ./schema-deploy.sh\",\"prebuild\":\"rimraf build && mkdirp build\",\"prepublishOnly\":\"yarn test && yarn build\",\"pretest\":\"yarn prebuild && yarn rollup\",\"rollup\":\"node rollup-node && node rollup && node schema-copy\",\"test\":\"TZ=America/Los_Angeles tape 'test/**/*-test.js' && eslint index.js test\"},\"types\":\"index.d.ts\",\"unpkg\":\"build/vega.min.js\",\"version\":\"5.3.2\"}");
+module.exports = JSON.parse("{\"_args\":[[\"vega@5.3.2\",\"/home/marius/Development/colorbrewer\"]],\"_from\":\"vega@5.3.2\",\"_id\":\"vega@5.3.2\",\"_inBundle\":false,\"_integrity\":\"sha512-dmY7hHQDlBSqiQKmcAvUe56bD+MuwGLGkFw2tLLNjBe5c2Hl8oZt/DFzyyIizvS+IC2wqlBnIYSwhrVK3bRXwQ==\",\"_location\":\"/vega\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"vega@5.3.2\",\"name\":\"vega\",\"escapedName\":\"vega\",\"rawSpec\":\"5.3.2\",\"saveSpec\":null,\"fetchSpec\":\"5.3.2\"},\"_requiredBy\":[\"/remodel-vis\"],\"_resolved\":\"https://registry.npmjs.org/vega/-/vega-5.3.2.tgz\",\"_spec\":\"5.3.2\",\"_where\":\"/home/marius/Development/colorbrewer\",\"author\":{\"name\":\"UW Interactive Data Lab\",\"url\":\"http://idl.cs.washington.edu\"},\"bugs\":{\"url\":\"https://github.com/vega/vega/issues\"},\"dependencies\":{\"vega-crossfilter\":\"^4.0.1\",\"vega-dataflow\":\"^5.2.1\",\"vega-encode\":\"^4.2.1\",\"vega-event-selector\":\"^2.0.0\",\"vega-expression\":\"^2.6.0\",\"vega-force\":\"^4.0.1\",\"vega-functions\":\"^5.2.0\",\"vega-geo\":\"^4.0.1\",\"vega-hierarchy\":\"^4.0.1\",\"vega-loader\":\"^4.0.0\",\"vega-parser\":\"^5.6.2\",\"vega-projection\":\"^1.2.1\",\"vega-runtime\":\"^5.0.1\",\"vega-scale\":\"^4.1.1\",\"vega-scenegraph\":\"^4.1.0\",\"vega-statistics\":\"^1.3.1\",\"vega-transforms\":\"^4.0.2\",\"vega-typings\":\"^0.6.2\",\"vega-util\":\"^1.10.0\",\"vega-view\":\"^5.2.1\",\"vega-view-transforms\":\"^4.3.0\",\"vega-voronoi\":\"^4.0.1\",\"vega-wordcloud\":\"^4.0.2\"},\"description\":\"The Vega visualization grammar.\",\"devDependencies\":{\"vega-schema\":\"*\"},\"gitHead\":\"bcea8011b193cfed59e5fa45cc2c00fd8cb9f588\",\"homepage\":\"https://github.com/vega/vega#readme\",\"jsdelivr\":\"build/vega.min.js\",\"keywords\":[\"vega\",\"visualization\",\"interaction\",\"dataflow\",\"library\",\"data\",\"d3\"],\"license\":\"BSD-3-Clause\",\"main\":\"build/vega-node.js\",\"module\":\"index\",\"name\":\"vega\",\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/vega/vega.git\"},\"scripts\":{\"build\":\"yarn rollup && node rollup -e && node rollup -m\",\"postbuild\":\"terser build/vega.js -c -m -o build/vega.min.js && terser build/vega-core.js -c -m -o build/vega-core.min.js\",\"postpublish\":\"git push && git push --tags && ./schema-deploy.sh\",\"prebuild\":\"rimraf build && mkdirp build\",\"prepublishOnly\":\"yarn test && yarn build\",\"pretest\":\"yarn prebuild && yarn rollup\",\"rollup\":\"node rollup-node && node rollup && node schema-copy\",\"test\":\"TZ=America/Los_Angeles tape 'test/**/*-test.js' && eslint index.js test\"},\"types\":\"index.d.ts\",\"unpkg\":\"build/vega.min.js\",\"version\":\"5.3.2\"}");
 
 /***/ }),
 
