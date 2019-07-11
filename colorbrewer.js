@@ -31,31 +31,16 @@ $("#color-system").change(updateValues);
 $("#layers input").change(layerChange);
 $("#filters input").change(showSchemes);
 
-$("input#import").keypress(function(event) {
-
-  if (event.which !== 13) {
-    return;
-  }
-
-  const jsonString = $(this).val();
+$("#importVegaButton").click(function() {
+	const jsonString = $("#vegaImport").val();
   const jsonObject = JSON.parse(jsonString);
 	const parser = new SpecParser();
 
 	importedTemplate = parser.parse(jsonObject);
 
-	$("#importPanel").val("");
-	$("#importPanel").hide();
-	$("#showImport").show();
-
 	initVega();
   updateVegaSpec();
 });
-
-$("#showImport").click(function() {
-	$("#importPanel").show();
-	$("#showImport").hide();
-});
-$("#showImport").hide();
 
 $("#transparency-slider").mousedown(function(){
 	var max = $("#transparency-track").width();
@@ -257,7 +242,7 @@ function setScheme(s)
 		importedTemplate.width = 700;
 		importedTemplate.height = 500;
 		const spec = compiler.getVegaSpecification(importedTemplate);
-		$("#copy-vega input").val(JSON.stringify(spec, null, 2));
+		$("#vegaImport").val(JSON.stringify(spec, null, 2));
 	}
 
   if (importedTemplate !== null) {
@@ -580,7 +565,7 @@ $( "#export #tab" ).toggle(
 		$( "#export" ).animate( { "left" : "265px" } );
 	},
 	function(){
-		$( "#export" ).animate( { "left" : "0px" } );
+		$( "#export" ).animate( { "left" : "-2px" } );
 	})
 
 function rgb2cmyk (r,g,b) {

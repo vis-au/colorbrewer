@@ -74,6 +74,12 @@
 					</div> <!--end scheme2 div-->
 				</div> <!--end scheme div-->
 
+				<div id="vegaImportPanel" class="section">
+						<p>Vega-Lite</p>
+						<textarea id="vegaImport" type="text"></textarea>
+						<button id="importVegaButton">Import</button>
+				</div>
+
 				<div id="colors">
 					<div id="options">
 						<p>Encodings:</p>
@@ -81,12 +87,6 @@
 
 						<p>Fields:</p>
 						<ul id="fields"></ul>
-
-						<div id="importPanel">
-							<p>Import Vega-Lite</p>
-							<input id="import" type="text" />
-						</div>
-						<button id="showImport">Import Vega-Lite</button>
 
 						<!-- <div class="learn-more" id="filters-learn-more" title="Learn more"></div>
 						<p>Only show:</p>
@@ -135,16 +135,18 @@
 				</div>
 			</div> <!--end left div-->
 
-			<div id="header">
-				<p id="nav"><a id="how" href="#">how to use</a> | <a href="http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer_updates.html" target="blank">updates</a> | <a id="downloads" href="#">downloads</a> | <a id="credits" href="#">credits</a></p>
-				<h1>COLOR<span>BREWER</span> 2.0</h1>
-				<h3>color advice for cartography</h3>
-			</div> <!--end header-->
-			<div id="map-container">
-				<div id="counties" class="svg-container"></div>
-				<div id="overlays" class="svg-container"></div>
-				<div id="vega-container"></div>
-			</div> <!--end map-container-->
+			<div id="right">
+				<div id="header">
+					<p id="nav"><a id="how" href="#">how to use</a> | <a href="http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer_updates.html" target="blank">updates</a> | <a id="downloads" href="#">downloads</a> | <a id="credits" href="#">credits</a></p>
+					<h1>COLOR<span>BREWER</span> 2.0</h1>
+					<h3>color advice for cartography</h3>
+				</div> <!--end header-->
+				<div id="map-container">
+					<div id="counties" class="svg-container"></div>
+					<div id="overlays" class="svg-container"></div>
+					<div id="vega-container"></div>
+				</div> <!--end map-container-->
+			</div>
 
 			<div id="export">
 				<div id="tab">
@@ -174,11 +176,6 @@
 						<h3>CSS</h3>
 						<p>CSS classes for this scheme</p>
 						<input type="text" id="permalink" value="CSS!" />
-					</div>
-					<div class="copy" id="copy-vega">
-						<h3>Vega-Lite</h3>
-						<p>Vega-Lite specification</p>
-						<input type="text" id="permalink" value="VEGA!">
 					</div>
 				</div> <!--end selected-data div-->
 			</div> <!--end export div-->

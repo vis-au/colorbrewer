@@ -23,6 +23,8 @@ a img{ border: none }
 
 #wrapper {
 	position: relative;
+	display: flex;
+	flex-direction: row;
 }
 
 #footer p{
@@ -32,15 +34,18 @@ a img{ border: none }
 }
 #footer img.logo{ float: right }
 
-#footer img.gh{ width: 16px; height: 16px; margin-right: 5px; vertical-align: middle;}
+#footer img.gh{
+	width: 16px;
+	height: 16px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
 
 #header{
-	float: left;
+	padding-bottom: 0;
+	width: 100%;
 	height: 68px;
 	background-color: #444;
-	width: 756px;
-	border-right: 1px solid #999;
-	border-left: 1px solid #999;
 }
 #header h1{
 	color: white;
@@ -59,10 +64,11 @@ a img{ border: none }
 	text-align: right;
 }
 
-#header p {
-	margin: 5px 0 0 5px;
+#header #nav {
+	padding: 5px 0 0 5px;
+	margin: 0;
 }
-#header p a{
+#header #nav a{
 	color: white;
 }
 
@@ -81,13 +87,16 @@ a img{ border: none }
 #left {
 	width: 264px;
 	height: 90vh;
-	float: left;
 	border-left: 1px solid #999;
 	border-bottom: 1px solid #999;
 	overflow: hidden;
 	background-color: #fff;
 	position: relative;
 	z-index: 999;
+}
+#right {
+	width: 760px;
+	height: 90vh;
 }
 
 .section {
@@ -182,8 +191,30 @@ a img{ border: none }
 	stroke-width: .5px;
 }
 
-#colors { padding: 0; }
-#colors > div { padding-top: 3px; }
+#vegaImportPanel {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 5px;
+}
+#vegaImportPanel #vegaImport {
+	height: 150px;
+	resize: vertical;
+}
+#vegaImportPanel #importVegaButton {
+	width: 100px;
+	margin-top: 5px;
+}
+
+#colors {
+	padding: 0;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+#colors > div {
+	padding-top: 3px;
+}
 
 #color-values, #color-chips, #options, #system {
 	float: left;
@@ -192,13 +223,8 @@ a img{ border: none }
 	margin-left: 5px;
 }
 
-#system{
-	position: absolute;
-	top: 295px;
-	left: 145px;
-	width: 122px;
-	padding-left: 5px;
-	float: right;
+#system {
+	width: 100%;
 	border-top: 1px solid #999
 }
 
@@ -207,10 +233,7 @@ a img{ border: none }
 }
 
 #options {
-	position: absolute;
-	top: 295px;
-	width: 142px;
-	padding-left: 2px;
+	width: 100%;
 	border-top: 1px solid #999;
 	border-right: 1px solid #999;
 }
@@ -348,14 +371,12 @@ a img{ border: none }
 
 #export{
 	position: absolute;
-	left: 0;
-	top: 215px;
-	height: 520px;
+	left: -2px;
+	top: 302px;
+	height: 400px;
 	width: 265px;
 	background-color: white;
 	border: 1px solid #999;
-	border-left: none;
-	border-right: none;
 }
 
 #export #tab{
@@ -404,7 +425,7 @@ a img{ border: none }
 #download a{
 	margin-left: 0;
 }
-#export input{
+#export input {
 	width: 230px;
 	margin: -5px 0 0 10px;
 }
@@ -510,8 +531,20 @@ a img{ border: none }
 a{ text-decoration: none; }
 a:hover{ text-decoration: underline; }
 #overlays{ pointer-events: none; }
-#map-container{ margin-left: 264px; position: relative; height:82vh; width: 756px; border: 1px solid #999; overflow: hidden; background: #fff; background-position:center; background-repeat:no-repeat;}
-.svg-container { position: absolute; width: 100%; height: 100%; overflow: hidden; }
+#map-container{
+	height: 82.9vh;
+	border: 1px solid #999;
+	overflow: hidden;
+	background: #fff;
+	background-position: center;
+	background-repeat:no-repeat;
+}
+.svg-container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
 #terrain-img{ position: absolute; }
 #road-lines{ fill: none; stroke: #f33; stroke-width: 1.5px; }
 #county-map{ fill: #999; }
