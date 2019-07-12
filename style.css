@@ -519,12 +519,38 @@ a img{ border: none }
 .right {
 	float: right;
 }
+#views,
+#encodings,
+#fields {
+	margin: 0.5rem 0;
+	padding: 0.15rem 0.15rem 0.25rem;
+}
+
+#views li,
+#encodings li,
+#fields li {
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+}
+
+#views li:hover,
+#encodings li:hover,
+#fields li:hover {
+	background: #eee;
+}
 
 #views .selectedView,
 #encodings .selectedEncoding,
 #fields .selectedField {
-	background: lightgrey;
+	background: #ddd;
 }
+#views .selectedView:hover,
+#encodings .selectedEncoding:hover,
+#fields .selectedField:hover {
+	background: #ddd;
+}
+
 #encodings .activeEncoding {
 	font-weight: bold;
 }

@@ -366,13 +366,6 @@ function setScheme(s)
 		encoding.field = field;
 		encoding.type = type;
 		encoding.scale = { range };
-		// encoding = {
-		// 	field,
-		// 	type,
-		// 	scale: {
-		// 		range
-		// 	}
-		// };
 
 		selectedView.encodings.set(visualVariable, encoding);
   }
@@ -505,7 +498,7 @@ function getCMYK( scheme, classes, n ){
 
 function selectEncoding(encoding) {
 	selectedEncoding = encoding;
-	initVega();
+	renderVegaUI();
 }
 
 function renderActiveEncodings() {
@@ -527,7 +520,7 @@ function renderActiveEncodings() {
 
 function selectView(view) {
 	selectedView = view;
-	initVega();
+	renderVegaUI();
 }
 
 function renderViews() {
@@ -552,7 +545,7 @@ function renderViews() {
 
 function selectField(field) {
 	selectedField = field;
-	initVega();
+	renderVegaUI();
 }
 
 function renderFields(fields) {
@@ -605,11 +598,14 @@ function getFields() {
   }
 }
 
-function initVega() {
+function renderVegaUI() {
 	renderActiveEncodings();
 	renderViews();
 	getFields();
+}
 
+function initVega() {
+	renderVegaUI();
 	updateVegaSpec();
 }
 
