@@ -347,8 +347,6 @@ function setScheme(s)
 
 	if (importedTemplate !== null) {
 		const compiler = new remodel_vis__WEBPACK_IMPORTED_MODULE_0__["SpecCompiler"]();
-		importedTemplate.width = 700;
-		importedTemplate.height = 500;
 		const spec = compiler.getVegaSpecification(importedTemplate);
 		$("#vegaImport").val(JSON.stringify(spec, null, 2));
 	}

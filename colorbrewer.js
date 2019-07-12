@@ -246,8 +246,6 @@ function setScheme(s)
 
 	if (importedTemplate !== null) {
 		const compiler = new SpecCompiler();
-		importedTemplate.width = 700;
-		importedTemplate.height = 500;
 		const spec = compiler.getVegaSpecification(importedTemplate);
 		$("#vegaImport").val(JSON.stringify(spec, null, 2));
 	}
