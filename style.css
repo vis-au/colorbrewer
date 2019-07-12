@@ -89,7 +89,7 @@ a img{ border: none }
 	height: 90vh;
 	border-left: 1px solid #999;
 	border-bottom: 1px solid #999;
-	overflow: hidden;
+	overflow: auto;
 	background-color: #fff;
 	position: relative;
 	z-index: 999;
@@ -549,10 +549,6 @@ a img{ border: none }
 #encodings .selectedEncoding:hover,
 #fields .selectedField:hover {
 	background: #ddd;
-}
-
-#encodings .activeEncoding {
-	font-weight: bold;
 }
 
 #customField {
