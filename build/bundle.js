@@ -356,14 +356,23 @@ function setScheme(s)
 		const type = selectedSchemeType === "sequential" ? "quantitative" : selectedSchemeType === "diverging" ? "nominal" : "ordinal";
 		const schemeColors = colorbrewer[selectedScheme][numClasses];
 		const range = type !== "quantitative" ? schemeColors : [schemeColors[schemeColors.length - 2], schemeColors[0]];
-		const encoding = {
-			field,
-			type,
-			scale: {
-				range
-			}
-		};
+
 		const visualVariable = selectedEncoding;
+		let encoding = selectedView.encodings.get(visualVariable);
+
+		if (!encoding) {
+			encoding = {};
+		}
+		encoding.field = field;
+		encoding.type = type;
+		encoding.scale = { range };
+		// encoding = {
+		// 	field,
+		// 	type,
+		// 	scale: {
+		// 		range
+		// 	}
+		// };
 
 		selectedView.encodings.set(visualVariable, encoding);
   }
