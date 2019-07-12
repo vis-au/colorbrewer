@@ -32,6 +32,10 @@ $(".scheme-type").change(function(){
 $("#color-system").change(updateValues);
 $("#layers input").change(layerChange);
 $("#filters input").change(showSchemes);
+$("#customField").change(function() {
+	const customField = $(this).val();
+	selectField(customField);
+});
 
 $("#importVegaButton").click(function() {
 	const jsonString = $("#vegaImport").val();

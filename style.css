@@ -529,6 +529,11 @@ a img{ border: none }
 	font-weight: bold;
 }
 
+#customField {
+	width: 90%;
+	margin-left: 5px;
+}
+
 a{ text-decoration: none; }
 a:hover{ text-decoration: underline; }
 #overlays{ pointer-events: none; }
