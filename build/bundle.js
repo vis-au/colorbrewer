@@ -122,6 +122,7 @@ var selectedScheme = "BuGn",
 	selectedField = null,
 	selectedView = null,
 	importedTemplate = null,
+	useInvertedScales = true,
   numClasses = 3;
 
 const initialSchema = {
@@ -144,7 +145,8 @@ const initialSchema = {
           "rgb(189,0,38)",
           "rgb(255,255,204)"
         ]
-      }
+			},
+			"legend": null
     }
   },
   "transform": [
@@ -161,8 +163,8 @@ const initialSchema = {
       }
     }
   ],
-  "height": 300,
-  "width": 500,
+  "height": 500,
+  "width": 700,
   "projection": {
     "type": "albersUsa"
   }
@@ -400,7 +402,13 @@ function setScheme(s)
 		const field = selectedField;
 		const type = selectedSchemeType === "sequential" ? "quantitative" : selectedSchemeType === "diverging" ? "nominal" : "ordinal";
 		const schemeColors = colorbrewer[selectedScheme][numClasses];
-		const range = type !== "quantitative" ? schemeColors : [schemeColors[schemeColors.length - 2], schemeColors[0]];
+		let range = type !== "quantitative"
+			? schemeColors
+			: [schemeColors[schemeColors.length - 2], schemeColors[0]];
+
+		if (useInvertedScales) {
+			range = range.reverse();
+		}
 
 		const visualVariable = selectedEncoding;
 		let encoding = selectedView.encodings.get(visualVariable);
@@ -88255,7 +88263,7 @@ Object(vega_util__WEBPACK_IMPORTED_MODULE_0__["extend"])(vega_dataflow__WEBPACK_
 /*! exports provided: _args, _from, _id, _inBundle, _integrity, _location, _phantomChildren, _requested, _requiredBy, _resolved, _spec, _where, author, bugs, dependencies, description, devDependencies, gitHead, homepage, jsdelivr, keywords, license, main, module, name, repository, scripts, types, unpkg, version, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"_args\":[[\"vega@5.3.2\",\"/home/marius/Development/colorbrewer\"]],\"_from\":\"vega@5.3.2\",\"_id\":\"vega@5.3.2\",\"_inBundle\":false,\"_integrity\":\"sha512-dmY7hHQDlBSqiQKmcAvUe56bD+MuwGLGkFw2tLLNjBe5c2Hl8oZt/DFzyyIizvS+IC2wqlBnIYSwhrVK3bRXwQ==\",\"_location\":\"/vega\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"vega@5.3.2\",\"name\":\"vega\",\"escapedName\":\"vega\",\"rawSpec\":\"5.3.2\",\"saveSpec\":null,\"fetchSpec\":\"5.3.2\"},\"_requiredBy\":[\"/remodel-vis\"],\"_resolved\":\"https://registry.npmjs.org/vega/-/vega-5.3.2.tgz\",\"_spec\":\"5.3.2\",\"_where\":\"/home/marius/Development/colorbrewer\",\"author\":{\"name\":\"UW Interactive Data Lab\",\"url\":\"http://idl.cs.washington.edu\"},\"bugs\":{\"url\":\"https://github.com/vega/vega/issues\"},\"dependencies\":{\"vega-crossfilter\":\"^4.0.1\",\"vega-dataflow\":\"^5.2.1\",\"vega-encode\":\"^4.2.1\",\"vega-event-selector\":\"^2.0.0\",\"vega-expression\":\"^2.6.0\",\"vega-force\":\"^4.0.1\",\"vega-functions\":\"^5.2.0\",\"vega-geo\":\"^4.0.1\",\"vega-hierarchy\":\"^4.0.1\",\"vega-loader\":\"^4.0.0\",\"vega-parser\":\"^5.6.2\",\"vega-projection\":\"^1.2.1\",\"vega-runtime\":\"^5.0.1\",\"vega-scale\":\"^4.1.1\",\"vega-scenegraph\":\"^4.1.0\",\"vega-statistics\":\"^1.3.1\",\"vega-transforms\":\"^4.0.2\",\"vega-typings\":\"^0.6.2\",\"vega-util\":\"^1.10.0\",\"vega-view\":\"^5.2.1\",\"vega-view-transforms\":\"^4.3.0\",\"vega-voronoi\":\"^4.0.1\",\"vega-wordcloud\":\"^4.0.2\"},\"description\":\"The Vega visualization grammar.\",\"devDependencies\":{\"vega-schema\":\"*\"},\"gitHead\":\"bcea8011b193cfed59e5fa45cc2c00fd8cb9f588\",\"homepage\":\"https://github.com/vega/vega#readme\",\"jsdelivr\":\"build/vega.min.js\",\"keywords\":[\"vega\",\"visualization\",\"interaction\",\"dataflow\",\"library\",\"data\",\"d3\"],\"license\":\"BSD-3-Clause\",\"main\":\"build/vega-node.js\",\"module\":\"index\",\"name\":\"vega\",\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/vega/vega.git\"},\"scripts\":{\"build\":\"yarn rollup && node rollup -e && node rollup -m\",\"postbuild\":\"terser build/vega.js -c -m -o build/vega.min.js && terser build/vega-core.js -c -m -o build/vega-core.min.js\",\"postpublish\":\"git push && git push --tags && ./schema-deploy.sh\",\"prebuild\":\"rimraf build && mkdirp build\",\"prepublishOnly\":\"yarn test && yarn build\",\"pretest\":\"yarn prebuild && yarn rollup\",\"rollup\":\"node rollup-node && node rollup && node schema-copy\",\"test\":\"TZ=America/Los_Angeles tape 'test/**/*-test.js' && eslint index.js test\"},\"types\":\"index.d.ts\",\"unpkg\":\"build/vega.min.js\",\"version\":\"5.3.2\"}");
+module.exports = JSON.parse("{\"_args\":[[\"vega@5.3.2\",\"C:\\\\Users\\\\au629923\\\\Repositories\\\\colorbrewer-fork\"]],\"_from\":\"vega@5.3.2\",\"_id\":\"vega@5.3.2\",\"_inBundle\":false,\"_integrity\":\"sha512-dmY7hHQDlBSqiQKmcAvUe56bD+MuwGLGkFw2tLLNjBe5c2Hl8oZt/DFzyyIizvS+IC2wqlBnIYSwhrVK3bRXwQ==\",\"_location\":\"/vega\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"vega@5.3.2\",\"name\":\"vega\",\"escapedName\":\"vega\",\"rawSpec\":\"5.3.2\",\"saveSpec\":null,\"fetchSpec\":\"5.3.2\"},\"_requiredBy\":[\"/remodel-vis\"],\"_resolved\":\"https://registry.npmjs.org/vega/-/vega-5.3.2.tgz\",\"_spec\":\"5.3.2\",\"_where\":\"C:\\\\Users\\\\au629923\\\\Repositories\\\\colorbrewer-fork\",\"author\":{\"name\":\"UW Interactive Data Lab\",\"url\":\"http://idl.cs.washington.edu\"},\"bugs\":{\"url\":\"https://github.com/vega/vega/issues\"},\"dependencies\":{\"vega-crossfilter\":\"^4.0.1\",\"vega-dataflow\":\"^5.2.1\",\"vega-encode\":\"^4.2.1\",\"vega-event-selector\":\"^2.0.0\",\"vega-expression\":\"^2.6.0\",\"vega-force\":\"^4.0.1\",\"vega-functions\":\"^5.2.0\",\"vega-geo\":\"^4.0.1\",\"vega-hierarchy\":\"^4.0.1\",\"vega-loader\":\"^4.0.0\",\"vega-parser\":\"^5.6.2\",\"vega-projection\":\"^1.2.1\",\"vega-runtime\":\"^5.0.1\",\"vega-scale\":\"^4.1.1\",\"vega-scenegraph\":\"^4.1.0\",\"vega-statistics\":\"^1.3.1\",\"vega-transforms\":\"^4.0.2\",\"vega-typings\":\"^0.6.2\",\"vega-util\":\"^1.10.0\",\"vega-view\":\"^5.2.1\",\"vega-view-transforms\":\"^4.3.0\",\"vega-voronoi\":\"^4.0.1\",\"vega-wordcloud\":\"^4.0.2\"},\"description\":\"The Vega visualization grammar.\",\"devDependencies\":{\"vega-schema\":\"*\"},\"gitHead\":\"bcea8011b193cfed59e5fa45cc2c00fd8cb9f588\",\"homepage\":\"https://github.com/vega/vega#readme\",\"jsdelivr\":\"build/vega.min.js\",\"keywords\":[\"vega\",\"visualization\",\"interaction\",\"dataflow\",\"library\",\"data\",\"d3\"],\"license\":\"BSD-3-Clause\",\"main\":\"build/vega-node.js\",\"module\":\"index\",\"name\":\"vega\",\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/vega/vega.git\"},\"scripts\":{\"build\":\"yarn rollup && node rollup -e && node rollup -m\",\"postbuild\":\"terser build/vega.js -c -m -o build/vega.min.js && terser build/vega-core.js -c -m -o build/vega-core.min.js\",\"postpublish\":\"git push && git push --tags && ./schema-deploy.sh\",\"prebuild\":\"rimraf build && mkdirp build\",\"prepublishOnly\":\"yarn test && yarn build\",\"pretest\":\"yarn prebuild && yarn rollup\",\"rollup\":\"node rollup-node && node rollup && node schema-copy\",\"test\":\"TZ=America/Los_Angeles tape 'test/**/*-test.js' && eslint index.js test\"},\"types\":\"index.d.ts\",\"unpkg\":\"build/vega.min.js\",\"version\":\"5.3.2\"}");
 
 /***/ }),
 

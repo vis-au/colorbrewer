@@ -43,7 +43,8 @@ const initialSchema = {
           "rgb(189,0,38)",
           "rgb(255,255,204)"
         ]
-      }
+			},
+			"legend": null
     }
   },
   "transform": [
@@ -60,8 +61,8 @@ const initialSchema = {
       }
     }
   ],
-  "height": 300,
-  "width": 500,
+  "height": 500,
+  "width": 700,
   "projection": {
     "type": "albersUsa"
   }
@@ -299,7 +300,9 @@ function setScheme(s)
 		const field = selectedField;
 		const type = selectedSchemeType === "sequential" ? "quantitative" : selectedSchemeType === "diverging" ? "nominal" : "ordinal";
 		const schemeColors = colorbrewer[selectedScheme][numClasses];
-		const range = type !== "quantitative" ? schemeColors : [schemeColors[schemeColors.length - 2], schemeColors[0]];
+		let range = type !== "quantitative"
+			? schemeColors
+			: [schemeColors[schemeColors.length - 2], schemeColors[0]];
 
 		const visualVariable = selectedEncoding;
 		let encoding = selectedView.encodings.get(visualVariable);
