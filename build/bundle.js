@@ -122,7 +122,7 @@ var selectedScheme = "BuGn",
 	selectedField = null,
 	selectedView = null,
 	importedTemplate = null,
-	useInvertedScales = true,
+	useInvertedScales = false,
 	numClasses = 3;
 
 const initialColorScheme = "GnBu";
@@ -179,6 +179,10 @@ $("#filters input").change(showSchemes);
 $("#customField").change(function() {
 	const customField = $(this).val();
 	selectField(customField);
+});
+$("#invertScalesBox").change(function() {
+	useInvertedScales = $(this).prop("checked");
+	setScheme(selectedScheme || initialColorScheme);
 });
 
 $("#importVegaButton").click(function() {
@@ -664,7 +668,6 @@ function loadDefaultSchema() {
   $("#vegaImport").val(JSON.stringify(initialSchema, null, 2));
 	$("#customField").val(initialField);
 	$("#ramps .ramp.selected").removeClass("selected");
-	$(`#ramps .ramp.${selectedScheme}`).addClass("selected");
 }
 
 function initVega() {
