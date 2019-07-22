@@ -21,7 +21,10 @@ var selectedScheme = "BuGn",
 	selectedField = null,
 	selectedView = null,
 	importedTemplate = null,
-  numClasses = 3;
+	useInvertedScales = true,
+	numClasses = 3;
+
+const initialColorScheme = "GnBu";
 
 const initialSchema = {
   "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
@@ -38,12 +41,6 @@ const initialSchema = {
     "color": {
       "field": "rate",
       "type": "quantitative",
-      "scale": {
-        "range": [
-          "rgb(189,0,38)",
-          "rgb(255,255,204)"
-        ]
-			},
 			"legend": null
     }
   },
@@ -304,6 +301,10 @@ function setScheme(s)
 			? schemeColors
 			: [schemeColors[schemeColors.length - 2], schemeColors[0]];
 
+		if (useInvertedScales) {
+			range = range.reverse();
+		}
+
 		const visualVariable = selectedEncoding;
 		let encoding = selectedView.encodings.get(visualVariable);
 
@@ -560,7 +561,9 @@ function loadDefaultSchema() {
   selectedField = initialField;
 
   $("#vegaImport").val(JSON.stringify(initialSchema, null, 2));
-  $("#customField").val(initialField);
+	$("#customField").val(initialField);
+	$("#ramps .ramp.selected").removeClass("selected");
+	$(`#ramps .ramp.${selectedScheme}`).addClass("selected");
 }
 
 function initVega() {
@@ -572,7 +575,7 @@ function init()
 {
 	$("#map-container").css("background-image","none");
 	var type = getParameterByName("type") || "sequential";
-	var scheme = getParameterByName("scheme") || "BuGn";
+	var scheme = getParameterByName("scheme") || initialColorScheme;
 	var n = getParameterByName("n") || 9;
 	$("#"+type).prop("checked",true);
 	$("#num-classes").val(n);
