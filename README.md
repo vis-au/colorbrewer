@@ -1,9 +1,11 @@
 ColorBrewer-Lite
 ==============
 
+[Try the live demo!](https://vis-au.github.io/colorbrewer)
+
 This project extends the popular [ColorBrewer](http://colorbrewer2.org/) -- a web tool for guidance in choosing choropleth map color schemes -- for modifying color scales in Vega-Lite specifications.
 
-To achieve this, we utilize [ReModel's](https://www.npmjs.com/package/remodel-vis) import and export classes to modify color encodings in all partial views in composite visualizations.
+To achieve this, we utilize [ReVize's](https://www.npmjs.com/package/revize) import and export classes to modify color encodings in all partial views in composite Vega-Lite visualizations.
 After selecting a target view, all color encodings from Vega-Lite (```color```, ```fill```, ```stroke```) can be set, mapping to any field of the included dataset.
 
 ColorBrewer is based on the research of [Dr. Cynthia Brewer](http://www.personal.psu.edu/cab38/). Built and maintained by [Axis Maps](http://axismaps.com).
@@ -12,7 +14,7 @@ Questions, problems, or other feedback? [File an issue!](https://github.com/vis-
 
 ## Using this Tool
 Enter a [Vega-Lite specification](https://vega.github.io/vega-lite) into the textfield in the left panel and click import.
-(Note: When importing a specification from the [Vega-Lite examples page](https://vega.github.io/vega-lite/examples/), URLs are relative to the Vega website, so to correctly render the specification in ColorBrewer, change any URLs to ```https://vega.github.io/editor/YOUR_DATA_URL```, where ```YOUR_DATA_URL``` takes the relative path from the example specification.)
+(Note: When importing a specification from the [Vega-Lite examples page](https://vega.github.io/vega-lite/examples/), URLs are relative to the Vega website, so to correctly render the specification in ColorBrewer, change any URLs to ```https://vega.github.io/vega-datasets/YOUR_DATA_URL```, where ```YOUR_DATA_URL``` takes the relative path from the example specification.)
 Your specification will be rendered in the panel on the right.
 In the left box below the text field, entries for all views, encodings and fields will appear, based on the specification you imported.
 
