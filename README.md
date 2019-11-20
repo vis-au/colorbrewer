@@ -1,7 +1,7 @@
 ColorBrewer-Lite
 ==============
 
-## [Try live demo!](https://vis-au.github.io/colorbrewer)
+[Try the live demo!](https://vis-au.github.io/colorbrewer)
 
 This project extends the popular [ColorBrewer](http://colorbrewer2.org/) -- a web tool for guidance in choosing choropleth map color schemes -- for modifying color scales in Vega-Lite specifications.
 
