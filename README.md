@@ -26,3 +26,21 @@ If you want to map color to a field that is not listed, you can enter it into th
 
 Afterwards, you can pick a color scheme from the top of the left panel, using the dropdown panel to select the number of shades.
 Make sure to select the correct data type in from the three options "quantitative", "nominal" and "ordinal".
+
+
+## Citing this tool
+ColorBrewer-Lite is a research output on visualization toolchaining. As such, we ask you to use the following citation when referring to ColorBrewer-Lite in your publications.
+
+```bib
+@inproceedings {hograefer2019,
+  booktitle = {Smart Tools and Apps for Graphics - Eurographics Italian Chapter Conference},
+  editor = {Agus, Marco and Corsini, Massimiliano and Pintus, Ruggero},
+  title = {{ReVize: A Library for Visualization Toolchaining with Vega-Lite}},
+  author = {Hogräfer, Marius and Schulz, Hans-Jörg},
+  year = {2019},
+  publisher = {The Eurographics Association},
+  ISSN = {2617-4855},
+  ISBN = {978-3-03868-100-7},
+  DOI = {10.2312/stag.20191375}
+}
+```
