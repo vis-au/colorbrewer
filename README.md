@@ -29,7 +29,7 @@ Make sure to select the correct data type in from the three options "quantitativ
 
 
 ## Citing this tool
-ColorBrewer-Lite is a research output on visualization toolchaining. As such, we ask you to use the following citation when referring to ColorBrewer-Lite in your publications.
+ColorBrewer-Lite is a research output on [visualization toolchaining](https://vis-au.github.io/toolchaining). As such, we ask you to use the following citation when referring to ColorBrewer-Lite in your publications.
 
 ```bib
 @inproceedings {hograefer2019,
