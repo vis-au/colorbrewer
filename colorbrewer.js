@@ -5,7 +5,7 @@
 //
 //
 
-import { SpecParser, SpecCompiler, PlotTemplate, TransformNode, URLDatasetNode } from "remodel-vis";
+import { SpecParser, SpecCompiler, PlotView, TransformNode, URLDatasetNode } from "remodel-vis";
 import vegaEmbed from "vega-embed";
 import * as d3 from "d3-fetch";
 
@@ -90,7 +90,7 @@ $("#importVegaButton").click(function() {
 	const parser = new SpecParser();
 
 	importedTemplate = parser.parse(jsonObject);
-	selectedView = importedTemplate.getFlatHierarchy().filter(t => t instanceof PlotTemplate)[0];
+	selectedView = importedTemplate.getFlatHierarchy().filter(t => t instanceof PlotView)[0];
 
 	initVega();
   updateVegaSpec();
@@ -479,7 +479,7 @@ function renderViews() {
 	}
 
 	const plotViews = importedTemplate.getFlatHierarchy()
-		.filter(t => t instanceof PlotTemplate);
+		.filter(t => t instanceof PlotView);
 
 	const viewsContainer = $("#views");
 	viewsContainer.empty();
@@ -559,7 +559,7 @@ function loadDefaultSchema() {
   const parser = new SpecParser();
 
 	importedTemplate = parser.parse(jsonObject);
-  selectedView = importedTemplate.getFlatHierarchy().filter(t => t instanceof PlotTemplate)[0];
+  selectedView = importedTemplate.getFlatHierarchy().filter(t => t instanceof PlotView)[0];
   selectedField = initialField;
 
   $("#vegaImport").val(JSON.stringify(initialSchema, null, 2));
