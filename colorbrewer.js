@@ -5,7 +5,7 @@
 //
 //
 
-import { SpecParser, SpecCompiler, PlotView, TransformNode, URLDatasetNode } from "remodel-vis";
+import { SpecParser, SpecCompiler, PlotView, TransformNode, URLDatasetNode, connect, broadcastNewVersion, subscribeToRemoteChanges } from "remodel-vis";
 import vegaEmbed from "vega-embed";
 import * as d3 from "d3-fetch";
 
@@ -84,17 +84,26 @@ $("#invertScalesBox").change(function() {
 	setScheme(selectedScheme || initialColorScheme);
 });
 
-$("#importVegaButton").click(function() {
+let specVersionId = -1; // ID for versioning the synchronized spec between clients
+$("#importVegaButton").click(() => {
+	updateVegaView();
 	const jsonString = $("#vegaImport").val();
-  const jsonObject = JSON.parse(jsonString);
+	const jsonObject = JSON.parse(jsonString);
+
+	broadcastNewVersion(jsonObject, specVersionId);
+});
+
+function updateVegaView() {
+	const jsonString = $("#vegaImport").val();
+	const jsonObject = JSON.parse(jsonString);
 	const parser = new SpecParser();
 
 	importedTemplate = parser.parse(jsonObject);
 	selectedView = importedTemplate.getFlatHierarchy().filter(t => t instanceof PlotView)[0];
 
 	initVega();
-  updateVegaSpec();
-});
+	updateVegaSpec();
+}
 
 $("#transparency-slider").mousedown(function(){
 	var max = $("#transparency-track").width();
@@ -320,6 +329,7 @@ function setScheme(s)
 		const compiler = new SpecCompiler();
 		const spec = compiler.getVegaSpecification(importedTemplate);
 		$("#vegaImport").val(JSON.stringify(spec, null, 2));
+		broadcastNewVersion(spec, specVersionId);
 	}
 
 	$(".score-icon").attr("class","score-icon");
@@ -583,8 +593,21 @@ function init()
 	setSchemeType(type);
 	setNumClasses(n);
   setScheme(scheme);
-  loadDefaultSchema();
+	// loadDefaultSchema();
+	// broadcastNewVersion(initialSchema);
 	initVega();
+	connect("http://localhost", 5000, "test");
+	subscribeToRemoteChanges(onSpecChangedRemotely);
+}
+
+function onSpecChangedRemotely(spec, versionId) {
+	if (versionId <= specVersionId) {
+		return;
+	}
+
+	$("#vegaImport").val(JSON.stringify(spec, null, 2));
+	specVersionId = versionId;
+	updateVegaView();
 }
 
 init();

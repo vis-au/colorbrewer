@@ -20,12 +20,12 @@
   },
   "homepage": "https://github.com/axismaps/colorbrewer#readme",
   "dependencies": {
-    "d3-fetch": "^1.1.2",
-    "remodel-vis": "^1.0.2",
-    "vega-embed": "^4.2.1"
+    "d3-fetch": "^1.2.0",
+    "remodel-vis": "^1.0.4",
+    "vega-embed": "^4.2.5"
   },
   "devDependencies": {
-    "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.5"
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12"
   }
 }
