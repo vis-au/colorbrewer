@@ -21,7 +21,7 @@
   "homepage": "https://github.com/axismaps/colorbrewer#readme",
   "dependencies": {
     "d3-fetch": "^1.2.0",
-    "remodel-vis": "^1.0.4",
+    "revize": "^1.0.4",
     "vega-embed": "^4.2.5"
   },
   "devDependencies": {
