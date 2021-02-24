@@ -5,9 +5,10 @@
 //
 //
 
-import { SpecParser, SpecCompiler, PlotView, TransformNode, URLDatasetNode, connect, broadcastNewVersion, subscribeToRemoteChanges } from "remodel-vis";
+import { SpecParser, SpecCompiler, PlotView, TransformNode, URLDatasetNode, connect,  subscribeToRemoteChanges } from "revize";
 import vegaEmbed from "vega-embed";
 import * as d3 from "d3-fetch";
+import { sendNewVersion } from "revize/dist/WebsocketBridge";
 
 const colorEncodings =  ["color", "fill", "stroke"];
 
@@ -90,7 +91,8 @@ $("#importVegaButton").click(() => {
 	const jsonString = $("#vegaImport").val();
 	const jsonObject = JSON.parse(jsonString);
 
-	broadcastNewVersion(jsonObject, specVersionId);
+	// broadcastNewVersion(jsonObject, specVersionId);
+	sendNewVersion(jsonObject, specVersionId);
 });
 
 function updateVegaView() {
@@ -329,7 +331,8 @@ function setScheme(s)
 		const compiler = new SpecCompiler();
 		const spec = compiler.getVegaSpecification(importedTemplate);
 		$("#vegaImport").val(JSON.stringify(spec, null, 2));
-		broadcastNewVersion(spec, specVersionId);
+		// broadcastNewVersion(spec, specVersionId);
+		sendNewVersion(spec, specVersionId);
 	}
 
 	$(".score-icon").attr("class","score-icon");
